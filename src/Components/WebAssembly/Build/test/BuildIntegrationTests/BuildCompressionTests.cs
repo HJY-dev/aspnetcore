@@ -113,6 +113,18 @@ namespace Microsoft.AspNetCore.Components.WebAssembly.Build
 
             Assert.Equal(frameworkFiles.Length, compressedFiles.Length);
             Assert.Equal(frameworkFiles, compressedFiles);
+
+            var brotliFiles = Directory.EnumerateFiles(
+                compressedFilesPath,
+                "*",
+                SearchOption.AllDirectories)
+                .Where(f => Path.GetExtension(f) == ".br")
+                .Select(f => Path.GetRelativePath(compressedFilesPath, f[0..^3]))
+                .OrderBy(f => f)
+                .ToArray();
+
+            // We don't compress things with brotli at build time
+            Assert.Empty(brotliFiles);
         }
 
         [Fact]
